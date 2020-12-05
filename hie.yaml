@@ -1,0 +1,12 @@
+cradle:
+  multi:
+    - path: "./src"
+      config:
+        cradle:
+          stack:
+            component: "advent2020:lib"
+    - path: "./app"
+      config:
+        cradle:
+          stack:
+            component: "advent2020:exe:advent2020"
