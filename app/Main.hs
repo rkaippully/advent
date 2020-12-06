@@ -1,12 +1,11 @@
 module Main where
 
-import Data.Text.IO (interact)
 import Day01
 import Day02
 import Day03
 import Day04
 import Day05
---import Day06
+import Day06
 --import Day07
 --import Day08
 --import Day09
@@ -35,7 +34,7 @@ main = do
   args <- getArgs
   case args of
     [day, part] -> solve day part
-    _           -> error "Usage: advent2020 <2-digit day> <1-digit part>"
+    _           -> putTextLn "Usage: advent2020 <2-digit day> <1-digit part>"
 
 solve :: String -> String -> IO ()
 solve day part = do
@@ -51,5 +50,7 @@ solve day part = do
             ("04", "2") -> day04Part2
             ("05", "1") -> day05Part1
             ("05", "2") -> day05Part2
+            ("06", "1") -> day06Part1
+            ("06", "2") -> day06Part2
             _           -> error "Unknown day and part"
   putTextLn $ f s

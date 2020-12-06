@@ -30,11 +30,13 @@ library
                  , Day03
                  , Day04
                  , Day05
+                 , Day06
   hs-source-dirs: src
   build-depends: base
                , relude
                , megaparsec
                , containers
+               , text
 
 executable advent2020
   import: advent-common
