@@ -3,20 +3,18 @@ module Day03
   , day03Part2
   ) where
 
-import Relude
-
+import Data.Function
 newtype Forest = Forest { unForest :: [[Bool]] }
   deriving (Show)
 
-makeForest :: Text -> Forest
-makeForest = Forest . fromMaybe (error "parse failed") . mapM makeTreeRow . lines
+makeForest :: String -> Forest
+makeForest = Forest . map makeTreeRow . lines
 
-makeTreeRow :: Text -> Maybe [Bool]
-makeTreeRow = fmap cycle . mapM f . toString
+makeTreeRow :: String -> [Bool]
+makeTreeRow = cycle . map f
   where
-    f '.' = Just False
-    f '#' = Just True
-    f _   = Nothing
+    f '.' = False
+    f '#' = True
 
 takeStep :: Int -> Int -> Forest -> Forest
 takeStep right down = Forest . map (drop right) . drop down . unForest
@@ -28,17 +26,16 @@ isAtTree _                     = False
 hasMoreToGo :: Forest -> Bool
 hasMoreToGo = not . null . unForest
 
-checkSlope :: Text -> (Int, Int) -> Integer
+checkSlope :: String -> (Int, Int) -> Integer
 checkSlope s (right, down) = makeForest s
                              & iterate (takeStep right down)
                              & takeWhile hasMoreToGo
-                             & map isAtTree
-                             & filter identity
+                             & filter isAtTree
                              & length
                              & toInteger
 
-day03Part1 :: Text -> Text
+day03Part1 :: String -> String
 day03Part1 s = show $ checkSlope s (3, 1)
 
-day03Part2 :: Text -> Text
+day03Part2 :: String -> String
 day03Part2 s = show $ product $ map (checkSlope s) [(1, 1), (3, 1), (5, 1), (7, 1), (1, 2)]

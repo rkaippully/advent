@@ -6,7 +6,7 @@ import Day03
 import Day04
 import Day05
 import Day06
---import Day07
+import Day07
 --import Day08
 --import Day09
 --import Day10
@@ -25,7 +25,6 @@ import Day06
 --import Day23
 --import Day24
 --import Day25
-import Relude
 import System.Environment (getArgs)
 
 
@@ -34,11 +33,11 @@ main = do
   args <- getArgs
   case args of
     [day, part] -> solve day part
-    _           -> putTextLn "Usage: advent2020 <2-digit day> <1-digit part>"
+    _           -> putStrLn "Usage: advent2020 <2-digit day> <1-digit part>"
 
 solve :: String -> String -> IO ()
 solve day part = do
-  s <- readFileText $ "data/day" <> day <> ".txt"
+  s <- readFile $ "data/day" <> day <> ".txt"
   let f = case (day, part) of
             ("01", "1") -> day01Part1
             ("01", "2") -> day01Part2
@@ -52,5 +51,7 @@ solve day part = do
             ("05", "2") -> day05Part2
             ("06", "1") -> day06Part1
             ("06", "2") -> day06Part2
+            ("07", "1") -> day07Part1
+            ("07", "2") -> day07Part2
             _           -> error "Unknown day and part"
-  putTextLn $ f s
+  putStrLn $ f s

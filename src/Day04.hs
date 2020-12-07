@@ -4,21 +4,25 @@ module Day04
   )
   where
 
+import Control.Monad
 import Data.Char
-import Relude
-import Text.Megaparsec hiding (many, some)
+import Data.Functor
+import Data.Maybe
+import Data.Monoid
+import Data.Void
+import Text.Megaparsec
 import Text.Megaparsec.Char
 
-type Parser = Parsec Void Text
+type Parser = Parsec Void String
 
 data LaxPassport = LaxPassport
-  { lbyr :: Last Text
-  , liyr :: Last Text
-  , leyr :: Last Text
-  , lhgt :: Last Text
-  , lhcl :: Last Text
-  , lecl :: Last Text
-  , lpid :: Last Text
+  { lbyr :: Last String
+  , liyr :: Last String
+  , leyr :: Last String
+  , lhgt :: Last String
+  , lhcl :: Last String
+  , lecl :: Last String
+  , lpid :: Last String
   }
   deriving (Show)
 
@@ -44,8 +48,8 @@ instance Monoid LaxPassport where
     , lpid = mempty
     }
 
-toLaxPassports :: Text -> [LaxPassport]
-toLaxPassports = either (error . toText . errorBundlePretty) identity . parse laxPassports ""
+toLaxPassports :: String -> [LaxPassport]
+toLaxPassports = fromMaybe (error "parse fail") . parseMaybe laxPassports
 
 laxPassports :: Parser [LaxPassport]
 laxPassports = laxPassport `sepBy` newline
@@ -64,13 +68,13 @@ laxField = do
   char ':'
   v <- some $ satisfy (not . isSpace)
   case k of
-    "byr" -> pure $ mempty { lbyr = Last (Just $ toText v) }
-    "iyr" -> pure $ mempty { liyr = Last (Just $ toText v) }
-    "eyr" -> pure $ mempty { leyr = Last (Just $ toText v) }
-    "hgt" -> pure $ mempty { lhgt = Last (Just $ toText v) }
-    "hcl" -> pure $ mempty { lhcl = Last (Just $ toText v) }
-    "ecl" -> pure $ mempty { lecl = Last (Just $ toText v) }
-    "pid" -> pure $ mempty { lpid = Last (Just $ toText v) }
+    "byr" -> pure $ mempty { lbyr = Last (Just v) }
+    "iyr" -> pure $ mempty { liyr = Last (Just v) }
+    "eyr" -> pure $ mempty { leyr = Last (Just v) }
+    "hgt" -> pure $ mempty { lhgt = Last (Just v) }
+    "hcl" -> pure $ mempty { lhcl = Last (Just v) }
+    "ecl" -> pure $ mempty { lecl = Last (Just v) }
+    "pid" -> pure $ mempty { lpid = Last (Just v) }
     "cid" -> pure mempty
     _     -> fail $ "Invalid field" <> k
 
@@ -78,7 +82,7 @@ hasRequiredFields :: LaxPassport -> Bool
 hasRequiredFields p = getAll $ mconcat $
   All . isJust . getLast <$> [lbyr p, liyr p, leyr p, lhgt p, lhcl p, lecl p, lpid p]
 
-day04Part1 :: Text -> Text
+day04Part1 :: String -> String
 day04Part1 = show . length . filter hasRequiredFields . toLaxPassports
 
 
@@ -124,8 +128,8 @@ data EyeColor = EyeColor
 
 data PassportId = PassportId
 
-toStrictPassports :: Text -> [StrictPassport]
-toStrictPassports = either (error . toText . errorBundlePretty) identity . parse strictPassports ""
+toStrictPassports :: String -> [StrictPassport]
+toStrictPassports = fromMaybe (error "parse fail") . parseMaybe strictPassports
 
 strictPassports :: Parser [StrictPassport]
 strictPassports = strictPassport `sepBy` newline
@@ -164,9 +168,7 @@ year min max = do
     else fail "Year out of range"
 
 number :: Parser Int
-number = do
-  s <- some digitChar
-  maybe (fail "wtf") pure $ readMaybe s
+number = read <$> some digitChar
 
 height :: Parser Height
 height = do
@@ -188,7 +190,7 @@ height = do
 hairColor :: Parser HairColor
 hairColor = do
   char '#'
-  sequenceA_ $ replicate 6 hexDigitChar
+  replicateM_ 6 hexDigitChar
   pure HairColor
 
 eyeColor :: Parser EyeColor
@@ -216,5 +218,5 @@ isValidPassport p = isJust (getLast $ sbyr p)
                     && isJust (getLast $ secl p)
                     && isJust (getLast $ spid p)
 
-day04Part2 :: Text -> Text
+day04Part2 :: String -> String
 day04Part2 = show . length . filter isValidPassport . toStrictPassports
