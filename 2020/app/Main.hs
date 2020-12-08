@@ -7,7 +7,7 @@ import Day04
 import Day05
 import Day06
 import Day07
---import Day08
+import Day08
 --import Day09
 --import Day10
 --import Day11
@@ -53,5 +53,7 @@ solve day part = do
             ("06", "2") -> day06Part2
             ("07", "1") -> day07Part1
             ("07", "2") -> day07Part2
+            ("08", "1") -> day08Part1
+            ("08", "2") -> day08Part2
             _           -> error "Unknown day and part"
   putStrLn $ f s
