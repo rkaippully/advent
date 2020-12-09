@@ -207,7 +207,7 @@ eyeColor = do
     _     -> fail "Invalid eye color"
 
 passportId :: Parser PassportId
-passportId = sequenceA (replicate 9 digitChar) $> PassportId
+passportId = replicateM 9 digitChar $> PassportId
 
 isValidPassport :: StrictPassport -> Bool
 isValidPassport p = isJust (getLast $ sbyr p)

@@ -6,8 +6,6 @@ module Day08
 import           Control.Arrow
 import           Data.IntMap.Strict ((!), (!?))
 import qualified Data.IntMap.Strict as M
-import           Data.List
-import           Data.Maybe
 import qualified Data.Set           as S
 
 data Op = Nop Int
