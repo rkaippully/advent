@@ -9,22 +9,22 @@ import Day06
 import Day07
 import Day08
 import Day09
---import Day10
---import Day11
---import Day12
---import Day13
---import Day14
---import Day15
---import Day16
---import Day17
---import Day18
---import Day19
---import Day20
---import Day21
---import Day22
---import Day23
---import Day24
---import Day25
+import Day10
+import Day11
+import Day12
+import Day13
+import Day14
+import Day15
+import Day16
+import Day17
+import Day18
+import Day19
+import Day20
+import Day21
+import Day22
+import Day23
+import Day24
+import Day25
 import System.Environment (getArgs)
 
 
@@ -57,5 +57,37 @@ solve day part = do
             ("08", "2") -> day08Part2
             ("09", "1") -> day09Part1
             ("09", "2") -> day09Part2
+            ("10", "1") -> day10Part1
+            ("10", "2") -> day10Part2
+            ("11", "1") -> day11Part1
+            ("11", "2") -> day11Part2
+            ("12", "1") -> day12Part1
+            ("12", "2") -> day12Part2
+            ("13", "1") -> day13Part1
+            ("13", "2") -> day13Part2
+            ("14", "1") -> day14Part1
+            ("14", "2") -> day14Part2
+            ("15", "1") -> day15Part1
+            ("15", "2") -> day15Part2
+            ("16", "1") -> day16Part1
+            ("16", "2") -> day16Part2
+            ("17", "1") -> day17Part1
+            ("17", "2") -> day17Part2
+            ("18", "1") -> day18Part1
+            ("18", "2") -> day18Part2
+            ("19", "1") -> day19Part1
+            ("19", "2") -> day19Part2
+            ("20", "1") -> day20Part1
+            ("20", "2") -> day20Part2
+            ("21", "1") -> day21Part1
+            ("21", "2") -> day21Part2
+            ("22", "1") -> day22Part1
+            ("22", "2") -> day22Part2
+            ("23", "1") -> day23Part1
+            ("23", "2") -> day23Part2
+            ("24", "1") -> day24Part1
+            ("24", "2") -> day24Part2
+            ("25", "1") -> day25Part1
+            ("25", "2") -> day25Part2
             _           -> error "Unknown day and part"
   putStrLn $ f s
