@@ -23,6 +23,11 @@ common advent-common
                     , TypeApplications
                     , FlexibleContexts
                     , QuasiQuotes
+  ghc-options: -Wall
+               -Wno-unticked-promoted-constructors
+               -Wincomplete-record-updates
+               -Wincomplete-uni-patterns
+               -Wredundant-constraints
   
 library
   import: advent-common
@@ -55,6 +60,7 @@ library
   build-depends: base
                , megaparsec
                , containers
+               , vector
 
 executable advent2020
   import: advent-common
