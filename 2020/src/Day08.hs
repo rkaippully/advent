@@ -3,10 +3,10 @@ module Day08
   , day08Part2
   ) where
 
-import           Control.Arrow
-import           Data.IntMap.Strict ((!), (!?))
+import Control.Arrow
+import Data.IntMap.Strict ((!), (!?))
 import qualified Data.IntMap.Strict as M
-import qualified Data.Set           as S
+import qualified Data.Set as S
 
 data Op = Nop Int
         | Jmp Int
@@ -14,32 +14,32 @@ data Op = Nop Int
         deriving (Show)
 
 parseOp :: String -> Op
-parseOp s = let [op, arg] = words s
-            in case op of
-                 "nop" -> Nop (readNum arg)
-                 "jmp" -> Jmp (readNum arg)
-                 "acc" -> Acc (readNum arg)
+parseOp s = case words s of
+              ["nop", arg] -> Nop (readNum arg)
+              ["jmp", arg] -> Jmp (readNum arg)
+              ["acc", arg] -> Acc (readNum arg)
+              _            -> undefined
   where
-    readNum ('+':s) = read s
-    readNum s       = read s
+    readNum ('+':ns) = read ns
+    readNum ns       = read ns
 
 makeMap :: [Op] -> M.IntMap Op
 makeMap = M.fromList . zip [0..]
 
 execute :: Int -> M.IntMap Op -> (Int, Bool)
-execute acc m = go 0 (acc, S.empty)
+execute accum m = go 0 (accum, S.empty)
   where
     go :: Int -> (Int, S.Set Int) -> (Int, Bool)
     go ip (acc, visited) | ip `S.member` visited = (acc, False)
                          | otherwise = case m !? ip of
                                          Nothing -> (acc, True)
-                                         Just op -> let (acc', ip') = execute acc ip op
+                                         Just op -> let (acc', ip') = step acc ip op
                                                     in go ip' (acc', S.insert ip visited)
 
-    execute :: Int -> Int -> Op -> (Int, Int)
-    execute acc ip (Nop _) = (acc, ip+1)
-    execute acc ip (Jmp x) = (acc, ip+x)
-    execute acc ip (Acc x) = (acc+x, ip+1)
+    step :: Int -> Int -> Op -> (Int, Int)
+    step acc ip (Nop _) = (acc, ip+1)
+    step acc ip (Jmp x) = (acc, ip+x)
+    step acc ip (Acc x) = (acc+x, ip+1)
 
 day08Part1 :: String -> String
 day08Part1 = lines

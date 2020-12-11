@@ -15,6 +15,7 @@ makeTreeRow = cycle . map f
   where
     f '.' = False
     f '#' = True
+    f _   = error "invalid input"
 
 takeStep :: Int -> Int -> Forest -> Forest
 takeStep right down = Forest . map (drop right) . drop down . unForest

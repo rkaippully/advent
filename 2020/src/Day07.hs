@@ -23,10 +23,8 @@ type Parser = Parsec Void String
 
 line :: Parser (Color, [(Color, Integer)])
 line = do
-  c <- color
-  string "bags contain "
-  ds <- destinations
-  char '.'
+  c <- color <* string "bags contain "
+  ds <- destinations <* char '.'
   pure (c, ds)
 
 color :: Parser Color
@@ -42,8 +40,7 @@ destinations = string "no other bags" $> []
 destination :: Parser (Color, Integer)
 destination = do
   n <- number
-  c <- color
-  string "bag" <* optional (char 's')
+  c <- color <* string "bag" <* optional (char 's')
   pure (c, n)
 
 number :: Parser Integer

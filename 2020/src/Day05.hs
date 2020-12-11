@@ -31,4 +31,5 @@ day05Part2 = lines
              >>> show
   where
     emptySeatId :: [[(Int, Int)]] -> Int
-    emptySeatId [_, (_, id):_] = id - 1
+    emptySeatId [_, (_, sid):_] = sid - 1
+    emptySeatId _               = undefined

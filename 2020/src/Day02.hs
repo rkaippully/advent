@@ -23,12 +23,9 @@ toPassword s = fromMaybe (error "Could not parse") $ parseMaybe passwordParser s
 
 passwordParser :: Parser Password
 passwordParser = do
-  s1 <- some digitChar
-  char '-'
-  s2 <- some digitChar
-  char ' '
-  c <- letterChar
-  string ": "
+  s1 <- some digitChar <* char '-'
+  s2 <- some digitChar <* char ' '
+  c <- letterChar <* string ": "
   pwd <- some letterChar
   pure Password
     { number1  = read s1

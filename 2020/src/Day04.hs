@@ -64,8 +64,7 @@ fieldSeparator = (char ' ' <|> newline) $> ()
 
 laxField :: Parser LaxPassport
 laxField = do
-  k <- some letterChar
-  char ':'
+  k <- some letterChar <* char ':'
   v <- some $ satisfy (not . isSpace)
   case k of
     "byr" -> pure $ mempty { lbyr = Last (Just v) }
@@ -145,8 +144,7 @@ strictPassport = do
 
 strictField :: Parser StrictPassport
 strictField = do
-  k <- some letterChar
-  char ':'
+  k <- some letterChar <* char ':'
   p <- case k of
          "byr" -> (\y -> mempty { sbyr = pure y }) <$> year 1920 2002
          "iyr" -> (\y -> mempty { siyr = pure y }) <$> year 2010 2020
@@ -161,9 +159,9 @@ strictField = do
   pure p
 
 year :: Int -> Int -> Parser Year
-year min max = do
+year mn mx = do
   n <- number
-  if n >= min && n <= max
+  if n >= mn && n <= mx
     then pure Year
     else fail "Year out of range"
 
@@ -175,23 +173,18 @@ height = do
   n <- number
   cmHeight n <|> inHeight n
   where
-    cmHeight n = do
-      string "cm"
+    cmHeight n = string "cm" *>
       if n >= 150 && n <= 193
         then pure Height
         else fail "Height out of range"
 
-    inHeight n = do
-        string "in"
+    inHeight n = string "in" *>
         if n >= 59 && n <= 76
           then pure Height
           else fail "Height out of range"
 
 hairColor :: Parser HairColor
-hairColor = do
-  char '#'
-  replicateM_ 6 hexDigitChar
-  pure HairColor
+hairColor = char '#' *> replicateM_ 6 hexDigitChar $> HairColor
 
 eyeColor :: Parser EyeColor
 eyeColor = do
