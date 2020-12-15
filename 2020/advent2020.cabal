@@ -66,6 +66,6 @@ executable advent2020
   import: advent-common
   main-is: Main.hs
   hs-source-dirs: app
-  ghc-options: -threaded -rtsopts -with-rtsopts=-N
+  ghc-options: -threaded -rtsopts -with-rtsopts=-N -O2
   build-depends: advent2020
                , base
