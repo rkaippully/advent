@@ -22,7 +22,7 @@ splitOn x = foldr go []
   where
     go a [] | a == x = []
             | otherwise = [[a]]
-    go a (y:ys) | a == x = ([]:y:ys)
+    go a (y:ys) | a == x = []:y:ys
                 | otherwise = (a:y):ys
 
 day13Part1 :: String -> String
@@ -31,7 +31,7 @@ day13Part1 s =
     (start, ids) = parse s
     mults n = (\i -> (n, n * i)) <$> [0..]
   in
-    show $ uncurry (*) $ second (\n -> n - start) $ minimumBy (comparing snd) $ head . (dropWhile ((< start) . snd)) . mults <$> catMaybes ids
+    show $ uncurry (*) $ second (\n -> n - start) $ minimumBy (comparing snd) $ head . dropWhile ((< start) . snd) . mults <$> catMaybes ids
 
 day13Part2 :: String -> String
 day13Part2 s =
