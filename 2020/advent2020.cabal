@@ -22,6 +22,9 @@ common advent-common
                     , GeneralizedNewtypeDeriving
                     , TypeApplications
                     , FlexibleContexts
+                    , FlexibleInstances
+                    , TypeSynonymInstances
+                    , InstanceSigs
                     , QuasiQuotes
   ghc-options: -Wall
                -Wno-unticked-promoted-constructors
