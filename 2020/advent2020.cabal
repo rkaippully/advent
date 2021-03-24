@@ -16,8 +16,6 @@ source-repository head
 common advent-common
   default-language: Haskell2010
   default-extensions: LambdaCase
-                    , OverloadedStrings
-                    , OverloadedLists
                     , DerivingVia
                     , GeneralizedNewtypeDeriving
                     , TypeApplications
@@ -26,6 +24,8 @@ common advent-common
                     , TypeSynonymInstances
                     , InstanceSigs
                     , QuasiQuotes
+                    , OverloadedStrings
+                    , OverloadedLists
   ghc-options: -Wall
                -Wno-unticked-promoted-constructors
                -Wincomplete-record-updates
