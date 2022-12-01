@@ -3,7 +3,6 @@ module Day21 (
   day21Part2,
 ) where
 
-import Relude
 
 day21Part1 :: String -> String
 day21Part1 = error "not implemented"

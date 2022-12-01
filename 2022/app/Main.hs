@@ -25,7 +25,7 @@ import Day22
 import Day23
 import Day24
 import Day25
-import Relude
+import System.Environment (getArgs)
 
 main :: IO ()
 main = do
