@@ -18,7 +18,7 @@
           inherit system;
           overlays = [ haskellOverlay ];
         };
-        ghcVersion = "ghc925";
+        ghcVersion = "ghc902";
         hsPkgs = pkgs.haskell.packages.${ghcVersion};
 
         pkgName = "advent2022";
@@ -45,6 +45,7 @@
             hsPkgs.fourmolu
             hsPkgs.ghc
             pkgs.hlint
+            pkgs.haskell-language-server
           ];
           src = null;
         };

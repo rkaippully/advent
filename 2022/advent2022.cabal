@@ -71,7 +71,6 @@ library
                  , Day24
                  , Day25
   hs-source-dirs: src
-  build-depends: base
 
 executable advent2022
   import: advent-common
@@ -82,4 +81,3 @@ executable advent2022
                -with-rtsopts=-N
                -O2
   build-depends: advent2022
-               , base
