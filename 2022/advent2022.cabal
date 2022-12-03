@@ -70,6 +70,7 @@ library
                  , Day25
   hs-source-dirs: src
   build-depends: base
+               , containers
 
 executable advent2022
   import: advent-common
