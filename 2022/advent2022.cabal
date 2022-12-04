@@ -71,6 +71,7 @@ library
   hs-source-dirs: src
   build-depends: base
                , containers
+               , megaparsec
 
 executable advent2022
   import: advent-common
