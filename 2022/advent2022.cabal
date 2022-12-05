@@ -28,7 +28,6 @@ common advent-common
                     , TypeSynonymInstances
   ghc-options: -Wall
                -Wcompat
-               -Werror
                -Widentities
                -Wincomplete-record-updates
                -Wincomplete-uni-patterns
@@ -72,6 +71,7 @@ library
   build-depends: base
                , containers
                , megaparsec
+               , mtl
 
 executable advent2022
   import: advent-common
