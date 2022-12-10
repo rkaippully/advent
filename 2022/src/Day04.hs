@@ -3,7 +3,7 @@ module Day04 (
   day04Part2,
 ) where
 
-import Data.IntSet (IntSet, disjoint, isSubsetOf)
+import Data.IntSet (IntSet, disjoint, fromList, isSubsetOf)
 import Data.Void (Void)
 import Text.Megaparsec (Parsec, runParser, some)
 import Text.Megaparsec.Char (char, digitChar)
@@ -24,7 +24,7 @@ lineToRanges s =
         b <- read <$> (some digitChar <* char ',')
         c <- read <$> (some digitChar <* char '-')
         d <- read <$> some digitChar
-        pure ([a .. b], [c .. d])
+        pure (fromList [a .. b], fromList [c .. d])
    in case runParser parser "" s of
         Left e -> error (show e)
         Right x -> x

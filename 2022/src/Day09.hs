@@ -35,7 +35,7 @@ moveRope (knots, visited) m =
   let
     tailIdx = Map.size knots - 1
     head' = moveHead (knots ! 0) m
-    knots' = foldl' @[] moveKnots (Map.insert 0 head' knots) [1 .. tailIdx]
+    knots' = foldl' moveKnots (Map.insert 0 head' knots) [1 .. tailIdx]
    in
     (knots', visited <> Set.singleton (knots' ! tailIdx))
 

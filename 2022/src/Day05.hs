@@ -36,12 +36,12 @@ inputParser = do
   moves <- (parseMove <* eol) `manyTill` eof
   pure (stacks, moves)
   where
-    numberLine = many (oneOf @[] "0123456789 ") >> eol >> eol
+    numberLine = many (digitChar <|> char ' ') >> eol >> eol
 
 parseStackLine :: Parser [Maybe Char]
 parseStackLine =
   some $
-    choice @[]
+    choice
       [ (Just <$> between (char '[') (char ']') asciiChar) <* optional (char ' ')
       , count 3 (char ' ') >> optional (char ' ') >> pure Nothing
       ]

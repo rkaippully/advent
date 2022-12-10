@@ -21,7 +21,6 @@ common advent-common
                     , FlexibleInstances
                     , GeneralizedNewtypeDeriving
                     , InstanceSigs
-                    , OverloadedLists
                     , OverloadedStrings
                     , QuasiQuotes
                     , TypeApplications
