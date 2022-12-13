@@ -72,6 +72,7 @@ library
                , containers
                , megaparsec
                , mtl
+               , split
 
 executable advent2022
   import: advent-common
