@@ -23,6 +23,7 @@ common advent-common
                     , InstanceSigs
                     , NamedFieldPuns
                     , OverloadedStrings
+                    , RecordWildCards
                     , QuasiQuotes
                     , TypeApplications
                     , TypeSynonymInstances
