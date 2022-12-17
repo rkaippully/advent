@@ -69,7 +69,8 @@ library
                  , Day24
                  , Day25
   hs-source-dirs: src
-  build-depends: base
+  build-depends: array
+               , base
                , containers
                , megaparsec
                , mtl
