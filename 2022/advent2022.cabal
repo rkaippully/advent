@@ -19,6 +19,7 @@ common advent-common
                     , DerivingVia
                     , FlexibleContexts
                     , FlexibleInstances
+                    , GADTs
                     , GeneralizedNewtypeDeriving
                     , InstanceSigs
                     , NamedFieldPuns
