@@ -76,6 +76,7 @@ library
                , megaparsec
                , mtl
                , split
+               , vector
 
 executable advent2022
   import: advent-common
