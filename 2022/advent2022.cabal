@@ -76,6 +76,7 @@ library
   build-depends: array
                , base
                , containers
+               , extra
                , megaparsec
                , mtl
                , split
