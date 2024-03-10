@@ -18,15 +18,15 @@
           inherit system;
           overlays = [ haskellOverlay ];
         };
-        ghcVersion = "ghc981";
-        hsPkgs = pkgs.haskell.packages.${ghcVersion};
+        ghcVersion = "948";
+        hsPkgs = pkgs.haskell.packages."ghc${ghcVersion}";
 
         pkgName = "advent2023";
 
         haskellOverlay = final: prev: {
           haskell = prev.haskell // {
             packages = prev.haskell.packages // {
-              ${ghcVersion} = prev.haskell.packages.${ghcVersion}.override {
+              "ghc${ghcVersion}" = prev.haskell.packages."ghc${ghcVersion}".override {
                 overrides = hfinal: hprev: {
                   ${pkgName} = hfinal.callCabal2nix pkgName (gitignore.lib.gitignoreSource ./.) {};
                 };
@@ -34,6 +34,8 @@
             };
           };
         };
+
+        haskell-language-server = pkgs.haskell-language-server.override { supportedGhcVersions = [ ghcVersion ]; };
       in {
         packages.default = hsPkgs.${pkgName};
         devShells.default = hsPkgs.shellFor {
@@ -45,7 +47,7 @@
             hsPkgs.fourmolu
             hsPkgs.ghc
             pkgs.hlint
-            hsPkgs.haskell-language-server
+            haskell-language-server
           ];
           src = null;
         };

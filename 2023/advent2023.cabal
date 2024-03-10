@@ -48,7 +48,8 @@ common advent-common
 
 library
   import: advent-common
-  exposed-modules: Day01
+  exposed-modules: AocLib
+                 , Day01
                  , Day02
                  , Day03
                  , Day04
