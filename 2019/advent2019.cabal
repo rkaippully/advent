@@ -43,10 +43,13 @@ library
   exposed-modules:
       AocLib
     , Day01
+    , Day02
   hs-source-dirs:
     src
   build-depends:
-    base
+      base
+    , containers
+    , extra
 
 executable advent2019
   import:

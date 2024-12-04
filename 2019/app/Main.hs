@@ -1,6 +1,7 @@
 module Main where
 
 import Day01 qualified
+import Day02 qualified
 import System.Environment (getArgs)
 
 main :: IO ()
@@ -16,5 +17,7 @@ solve day part = do
   let f = case (day, part) of
         ("01", "1") -> Day01.part1
         ("01", "2") -> Day01.part2
+        ("02", "1") -> Day02.part1
+        ("02", "2") -> Day02.part2
         _invalid -> error "Unknown day and part"
   putStrLn $ f s
