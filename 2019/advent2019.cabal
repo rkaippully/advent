@@ -1,0 +1,65 @@
+cabal-version: 2.4
+
+name:           advent2019
+version:        1.0.0
+homepage:       https://github.com/rkaippully/advent#readme
+author:         Raghu Kaippully
+copyright:      2024 Raghu Kaippully
+license:        BSD-3-Clause
+license-file:   LICENSE
+build-type:     Simple
+
+source-repository head
+  type: git
+  location: https://github.com/rkaippully/advent
+
+common advent-common
+  default-language:
+    GHC2021
+  default-extensions: 
+   BlockArguments
+   DeriveAnyClass
+   DerivingStrategies
+   LambdaCase
+   OverloadedStrings
+  ghc-options:
+   -Wall
+   -Wcompat
+   -Widentities
+   -Wincomplete-record-updates
+   -Wincomplete-uni-patterns
+   -Wmissing-fields
+   -Wmissing-home-modules
+   -Wmissing-deriving-strategies
+   -Wpartial-fields
+   -Wredundant-constraints
+   -Wunused-packages
+   -Wno-unticked-promoted-constructors
+   -fshow-warning-groups
+
+library
+  import:
+    advent-common
+  exposed-modules:
+      AocLib
+    , Day01
+  hs-source-dirs:
+    src
+  build-depends:
+    base
+
+executable advent2019
+  import:
+    advent-common
+  main-is:
+    Main.hs
+  hs-source-dirs:
+    app
+  ghc-options:
+    -threaded
+    -rtsopts
+    -with-rtsopts=-N
+    -O2
+  build-depends:
+      advent2019
+    , base
