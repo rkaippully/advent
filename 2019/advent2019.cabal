@@ -44,6 +44,7 @@ library
       AocLib
     , Day01
     , Day02
+    , Day03
   hs-source-dirs:
     src
   build-depends:
