@@ -20,6 +20,7 @@ common advent-common
    BlockArguments
    DeriveAnyClass
    DerivingStrategies
+   FunctionalDependencies
    LambdaCase
    OverloadedStrings
   ghc-options:
@@ -46,12 +47,14 @@ library
     , Day02
     , Day03
     , Day04
+    , Day05
   hs-source-dirs:
     src
   build-depends:
       base
     , containers
     , extra
+    , lens
 
 executable advent2019
   import:
