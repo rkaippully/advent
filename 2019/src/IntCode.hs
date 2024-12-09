@@ -1,6 +1,6 @@
 -- | The IntCode computer
 module IntCode (
-  Computer,
+  Computer (..),
   Input,
   Output,
   newComputer,
