@@ -10,8 +10,8 @@ import IntCode (
   newComputer,
  )
 
-type Phase = Word
-type Signal = Word
+type Phase = Int
+type Signal = Int
 
 part1 :: String -> String
 part1 = show . findLargestSignal head . mkAmpPermutations 0 4

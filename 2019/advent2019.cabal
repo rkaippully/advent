@@ -51,6 +51,7 @@ library
     , Day06
     , Day07
     , Day08
+    , Day09
     , IntCode
   hs-source-dirs:
     src

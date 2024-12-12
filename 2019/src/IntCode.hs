@@ -10,24 +10,25 @@ module IntCode (
 ) where
 
 import Data.List.Extra (splitOn)
-import Data.Map.Strict (Map, (!))
+import Data.Map.Strict (Map)
 import Data.Map.Strict qualified as Map
 
 data Computer = Computer
   { memory :: Memory
   , pc :: Addr
+  , relBase :: Addr
   }
 
-type Memory = Map Addr Word
+type Memory = Map Addr Int
 
 newtype Addr = Addr Word
-  deriving newtype (Show, Eq, Ord, Enum, Num)
+  deriving newtype (Show, Eq, Ord, Enum, Real, Integral, Num)
 
-type Input = Word
-type Output = Word
+type Input = Int
+type Output = Int
 
 newComputer :: String -> Computer
-newComputer s = Computer{memory = initMemory, pc = 0}
+newComputer s = Computer{memory = initMemory, pc = 0, relBase = 0}
   where
     initMemory = Map.fromList $ zip [0 ..] $ map read $ splitOn "," s
 
@@ -51,105 +52,136 @@ run st inputs =
     Halted c -> ([], c)
 
 data Step
-  = NeedInput (Word -> Step)
-  | HasOutput Word Step
+  = NeedInput (Int -> Step)
+  | HasOutput Int Step
   | Halted Computer
 
 step :: Computer -> Step
-step comp = exec comp (decode comp)
+step comp = exec (decode comp) comp
 
-data Insn
-  = ADD Operand Operand Addr
-  | MUL Operand Operand Addr
-  | IN Addr
+data Instruction
+  = ADD Operand Operand Operand
+  | MUL Operand Operand Operand
+  | IN Operand
   | OUT Operand
   | JNZ Operand Operand
   | JZ Operand Operand
-  | SLT Operand Operand Addr
-  | SEQ Operand Operand Addr
+  | SLT Operand Operand Operand
+  | SEQ Operand Operand Operand
+  | ARB Operand
   | HLT
   deriving stock (Show, Eq)
 
 data Operand
   = PosOperand Addr
-  | ImmOperand Word
+  | ImmOperand Int
+  | RelOperand Int
   deriving stock (Show, Eq)
 
-decode :: Computer -> Insn
+decode :: Computer -> Instruction
 decode Computer{memory, pc} =
   case opcode of
-    1 -> ADD (toOperand 0 p0) (toOperand 1 p1) (Addr p2)
-    2 -> MUL (toOperand 0 p0) (toOperand 1 p1) (Addr p2)
-    3 -> IN (Addr p0)
+    1 -> ADD (toOperand 0 p0) (toOperand 1 p1) (toOperand 2 p2)
+    2 -> MUL (toOperand 0 p0) (toOperand 1 p1) (toOperand 2 p2)
+    3 -> IN (toOperand 0 p0)
     4 -> OUT (toOperand 0 p0)
     5 -> JNZ (toOperand 0 p0) (toOperand 1 p1)
     6 -> JZ (toOperand 0 p0) (toOperand 1 p1)
-    7 -> SLT (toOperand 0 p0) (toOperand 1 p1) (Addr p2)
-    8 -> SEQ (toOperand 0 p0) (toOperand 1 p1) (Addr p2)
+    7 -> SLT (toOperand 0 p0) (toOperand 1 p1) (toOperand 2 p2)
+    8 -> SEQ (toOperand 0 p0) (toOperand 1 p1) (toOperand 2 p2)
+    9 -> ARB (toOperand 0 p0)
     99 -> HLT
-    _ -> error "Invalid instruction"
+    x -> error $ "Invalid opcode: " ++ show x
   where
-    (modes, opcode) = (memory ! pc) `divMod` 100
-    p0 = memory ! (pc + 1)
-    p1 = memory ! (pc + 2)
-    p2 = memory ! (pc + 3)
+    modes, opcode :: Word
+    (modes, opcode) = (fromIntegral $ memLookup memory pc) `divMod` 100
 
-    toOperand :: Word -> Word -> Operand
+    p0, p1, p2 :: Int
+    p0 = memLookup memory (pc + 1)
+    p1 = memLookup memory (pc + 2)
+    p2 = memLookup memory (pc + 3)
+
+    toOperand :: Word -> Int -> Operand
     toOperand idx v =
       case modeAt idx of
-        0 -> PosOperand (Addr v)
+        0 -> PosOperand (toAddr v)
         1 -> ImmOperand v
+        2 -> RelOperand v
         _ -> error "Invalid parameter mode"
 
     modeAt :: Word -> Word
     modeAt idx = (modes `div` (10 ^ idx)) `mod` 10
 
-exec :: Computer -> Insn -> Step
-exec comp@Computer{memory, pc} = \case
-  ADD x y z ->
-    step
-      Computer
-        { memory = Map.insert z (operandVal comp x + operandVal comp y) memory
-        , pc = pc + 4
-        }
-  MUL x y z ->
-    step
-      Computer
-        { memory = Map.insert z (operandVal comp x * operandVal comp y) memory
-        , pc = pc + 4
-        }
-  IN x -> NeedInput \val ->
-    step
-      Computer
-        { memory = Map.insert x val memory
-        , pc = pc + 2
-        }
-  OUT x -> HasOutput (operandVal comp x) (step comp{pc = pc + 2})
-  JNZ x y ->
-    step
-      if operandVal comp x /= 0
-        then comp{pc = Addr (operandVal comp y)}
-        else comp{pc = pc + 3}
-  JZ x y ->
-    step
-      if operandVal comp x == 0
-        then comp{pc = Addr (operandVal comp y)}
-        else comp{pc = pc + 3}
-  SLT x y z ->
-    step
-      Computer
-        { memory = Map.insert z (if operandVal comp x < operandVal comp y then 1 else 0) memory
-        , pc = pc + 4
-        }
-  SEQ x y z ->
-    step
-      Computer
-        { memory = Map.insert z (if operandVal comp x == operandVal comp y then 1 else 0) memory
-        , pc = pc + 4
-        }
-  HLT -> Halted comp{pc = pc + 1}
+memLookup :: Memory -> Addr -> Int
+memLookup = flip (Map.findWithDefault 0)
 
-operandVal :: Computer -> Operand -> Word
-operandVal Computer{memory} = \case
-  PosOperand addr -> memory ! addr
+toAddr :: Int -> Addr
+toAddr v
+  | v < 0 = error "negative address!"
+  | otherwise = Addr (fromIntegral v)
+
+exec :: Instruction -> Computer -> Step
+exec instruction = execInstruction . incrementPC instruction
+  where
+    execInstruction :: Computer -> Step
+    execInstruction comp@Computer{relBase} =
+      case instruction of
+        ADD x y z ->
+          step $ memSet z (operandVal comp x + operandVal comp y) comp
+        MUL x y z ->
+          step $ memSet z (operandVal comp x * operandVal comp y) comp
+        IN x ->
+          NeedInput \val -> step $ memSet x val comp
+        OUT x ->
+          HasOutput (operandVal comp x) (step comp)
+        JNZ x y ->
+          step
+            if operandVal comp x /= 0
+              then comp{pc = addrVal comp y}
+              else comp
+        JZ x y ->
+          step
+            if operandVal comp x == 0
+              then comp{pc = addrVal comp y}
+              else comp
+        SLT x y z ->
+          step $ memSet z (if operandVal comp x < operandVal comp y then 1 else 0) comp
+        SEQ x y z ->
+          step $ memSet z (if operandVal comp x == operandVal comp y then 1 else 0) comp
+        ARB x ->
+          step comp{relBase = toAddr (fromIntegral relBase + operandVal comp x)}
+        HLT ->
+          Halted comp
+
+operandVal :: Computer -> Operand -> Int
+operandVal Computer{memory, relBase} = \case
+  PosOperand addr -> memLookup memory addr
   ImmOperand v -> v
+  RelOperand o -> memLookup memory $ toAddr $ fromIntegral relBase + o
+
+addrVal :: Computer -> Operand -> Addr
+addrVal comp = toAddr . operandVal comp
+
+memSet :: Operand -> Int -> Computer -> Computer
+memSet op val comp@Computer{memory, relBase} = comp{memory = Map.insert addr val memory}
+  where
+    addr = case op of
+      PosOperand a -> a
+      ImmOperand v -> toAddr v
+      RelOperand o -> toAddr $ fromIntegral relBase + o
+
+incrementPC :: Instruction -> Computer -> Computer
+incrementPC instruction comp@Computer{pc} = comp{pc = pc + insnLength}
+  where
+    insnLength =
+      case instruction of
+        ADD _ _ _ -> 4
+        MUL _ _ _ -> 4
+        IN _ -> 2
+        OUT _ -> 2
+        JNZ _ _ -> 3
+        JZ _ _ -> 3
+        SLT _ _ _ -> 4
+        SEQ _ _ _ -> 4
+        ARB _ -> 2
+        HLT -> 1
