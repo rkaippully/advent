@@ -9,6 +9,7 @@ import Day06 qualified
 import Day07 qualified
 import Day08 qualified
 import Day09 qualified
+import Day10 qualified
 import System.Environment (getArgs)
 
 main :: IO ()
@@ -40,5 +41,7 @@ solve day part = do
         ("08", "2") -> Day08.part2
         ("09", "1") -> Day09.part1
         ("09", "2") -> Day09.part2
+        ("10", "1") -> Day10.part1
+        ("10", "2") -> Day10.part2
         _invalid -> error "Unknown day and part"
   putStrLn $ f s
