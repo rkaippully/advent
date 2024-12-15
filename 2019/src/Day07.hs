@@ -1,11 +1,7 @@
 module Day07 (part1, part2) where
 
-import Control.Arrow ((>>>))
-import Data.Function (fix)
-import Data.List (foldl1', permutations)
+import Data.List (permutations)
 import IntCode (
-  Input,
-  Output,
   evalComputer,
   newComputer,
  )
@@ -14,31 +10,26 @@ type Phase = Int
 type Signal = Int
 
 part1 :: String -> String
-part1 = show . findLargestSignal head . mkAmpPermutations 0 4
+part1 = show . findLargestSignal 0 4
+  where
+    findLargestSignal :: Phase -> Phase -> String -> Signal
+    findLargestSignal from to s = maximum do
+      [p0, p1, p2, p3, p4] <- permutations [from .. to]
+      let out0 = evalComputer [p0, 0] (newComputer s)
+          out1 = evalComputer (p1 : out0) (newComputer s)
+          out2 = evalComputer (p2 : out1) (newComputer s)
+          out3 = evalComputer (p3 : out2) (newComputer s)
+      pure $ last $ evalComputer (p4 : out3) (newComputer s)
 
 part2 :: String -> String
-part2 = show . findLargestSignal last . mkAmpPermutations 5 9
-
--- A single amplifier
-type Amp = [Input] -> [Output]
-
--- A series of amplifiers connected left to right
-type AmpSeries = [Input] -> [Output]
-
-mkAmpPermutations :: Phase -> Phase -> String -> [AmpSeries]
-mkAmpPermutations from to s = map (mkAmpSeries s) $ permutations [from .. to]
-
-mkAmpSeries :: String -> [Phase] -> AmpSeries
-mkAmpSeries s phases inputs = connectAmps amps (0 : inputs)
+part2 = show . findLargestSignal 5 9
   where
-    amps = map (mkAmp s) phases
-
-mkAmp :: String -> Phase -> Amp
-mkAmp s p inputs = evalComputer (newComputer s) (p : inputs)
-
--- connect the amplifiers in a series
-connectAmps :: [Amp] -> AmpSeries
-connectAmps = foldl1' (>>>)
-
-findLargestSignal :: ([Signal] -> Signal) -> [AmpSeries] -> Signal
-findLargestSignal f amps = maximum $ map (f . fix) amps
+    findLargestSignal :: Phase -> Phase -> String -> Signal
+    findLargestSignal from to s = maximum do
+      [p0, p1, p2, p3, p4] <- permutations [from .. to]
+      let out0 = evalComputer (p0 : 0 : out4) (newComputer s)
+          out1 = evalComputer (p1 : out0) (newComputer s)
+          out2 = evalComputer (p2 : out1) (newComputer s)
+          out3 = evalComputer (p3 : out2) (newComputer s)
+          out4 = evalComputer (p4 : out3) (newComputer s)
+      pure $ last out4

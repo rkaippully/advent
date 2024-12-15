@@ -9,9 +9,10 @@ module IntCode (
   execComputer,
 ) where
 
-import Data.List.Extra (splitOn)
+import Data.List.Extra (splitOn, uncons)
 import Data.Map.Strict (Map)
 import Data.Map.Strict qualified as Map
+import Data.Tuple.Extra (snd3, thd3)
 
 data Computer = Computer
   { memory :: Memory
@@ -32,28 +33,48 @@ newComputer s = Computer{memory = initMemory, pc = 0, relBase = 0}
   where
     initMemory = Map.fromList $ zip [0 ..] $ map read $ splitOn "," s
 
-runComputer :: Computer -> [Input] -> ([Output], Computer)
-runComputer = run . step
+evalComputer :: [Input] -> Computer -> [Output]
+evalComputer ins = snd3 . runComputer uncons (flip const) ins
 
-evalComputer :: Computer -> [Input] -> [Output]
-evalComputer c = fst . runComputer c
+execComputer :: [Input] -> Computer -> Computer
+execComputer ins = thd3 . runComputer uncons (flip const) ins
 
-execComputer :: Computer -> [Input] -> Computer
-execComputer c = snd . runComputer c
+runComputer ::
+  -- | Provide next input
+  (s -> Maybe (Input, s)) ->
+  -- | Consume next output
+  (Output -> s -> s) ->
+  s ->
+  Computer ->
+  (s, [Output], Computer)
+runComputer getInput putOutput s = run getInput putOutput s . step
 
-run :: Step -> [Input] -> ([Output], Computer)
-run st inputs =
-  case st of
-    NeedInput f ->
-      case inputs of
-        [] -> error "Not enough input"
-        (x : xs) -> run (f x) xs
-    HasOutput x nxt -> let (xs, c) = run nxt inputs in (x : xs, c)
-    Halted c -> ([], c)
+run ::
+  forall s.
+  -- | Provide next input
+  (s -> Maybe (Input, s)) ->
+  -- | Consume next output
+  (Output -> s -> s) ->
+  s ->
+  Step ->
+  (s, [Output], Computer)
+run getInput putOutput = go
+  where
+    go :: s -> Step -> (s, [Output], Computer)
+    go s = \case
+      NeedInput f ->
+        case getInput s of
+          Nothing -> error "missing input"
+          Just (x, s') -> go s' (f x)
+      HasOutput x nxt ->
+        let (s', xs, c) = go (putOutput x s) nxt
+         in (s', x : xs, c)
+      Halted c ->
+        (s, [], c)
 
 data Step
-  = NeedInput (Int -> Step)
-  | HasOutput Int Step
+  = NeedInput (Input -> Step)
+  | HasOutput Output Step
   | Halted Computer
 
 step :: Computer -> Step
